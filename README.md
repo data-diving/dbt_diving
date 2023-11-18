@@ -7,7 +7,7 @@ To install package, add these lines to your `packages.yml` file:
 ```yaml
 packages:
   - git: "https://github.com/data-diving/dbt_diving.git"
-    revision: 1.0.0
+    revision: 1.1.0
 ```
 
 Check [dbt Hub](https://hub.getdbt.com/) for the latest installation instructions, 
@@ -29,7 +29,7 @@ or [read the docs](https://docs.getdbt.com/docs/building-a-dbt-project/package-m
 
 **Output**: list of strings
 
-**Usage**: You can provide dbt object name of any type (model, seed table, test, etc.) as an input. If you add `+` (plus sign) at the beginning, macro will return object and all its downstream dependencies. If you add `+` at the end of the selector string, macro will return object and all its upstream dependencies. You can combine these options.
+**Usage**: You can provide dbt object name of any type (model, seed table, test, etc.) as an input. If you add `+` (plus sign) at the beginning, macro will return object and all its downstream dependencies. If you add `+` at the end of the selector string, macro will return object and all its upstream dependencies. You can combine these options. [Set operators](https://docs.getdbt.com/reference/node-selection/set-operators) are also supported.
 
 ## License
 [MIT](LICENSE)
