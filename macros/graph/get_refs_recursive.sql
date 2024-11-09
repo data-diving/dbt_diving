@@ -1,4 +1,4 @@
-{%- macro get_refs_recursive(selector) -%}
+{%- macro get_refs_recursive(selector, print_list=False) -%}
 
 {%- set ns = namespace(node_list=[], cur_node_list=[]) -%}
 {%- for one_union in selector.split(' ') -%}
@@ -22,7 +22,13 @@
     {%- set ns.node_list = ns.node_list + ns.cur_node_list %}
 {%- endfor -%}
 
-{{ return(ns.node_list | unique | list) }}
+{% set final_list = ns.node_list | unique | list | sort %}
+{% if print_list %}
+    {%- for one_model in final_list -%}
+        {{ print(project_name ~ "." ~ one_model) }}
+    {%- endfor -%}
+{% endif %}
+{{ return(final_list) }}
 
 {%- endmacro -%}
 
@@ -72,18 +78,21 @@
 
     {%- if with_downstream -%}
         {%- set recursive_models = [node.name] -%}
-        {%- for downstream_model in all_nodes recursive -%}
-            {%- set refs = [] -%}
-            {%- for ref in downstream_model['refs'] -%}
-                {%- do refs.append(ref[0]) -%}
-            {%- endfor -%}
+        {%- for recursive_model in recursive_models recursive -%}
+            {%- set outer_loop = loop -%}
+            {%- for downstream_model in all_nodes -%}
+                {%- set refs = [] -%}
+                {%- for ref in downstream_model['refs'] -%}
+                    {%- do refs.append(ref[0]) -%}
+                {%- endfor -%}
 
-            {%- if recursive_models[-1] in refs -%}
-                {%- do refs_list.append(downstream_model.name) -%}
-                {%- do recursive_models.append(downstream_model.name) -%}
-                {{ loop(all_nodes) }}
-                {%- set recursive_models = recursive_models[:-1] -%}
-            {%- endif -%}
+                {%- if recursive_model in refs -%}
+                    {%- do refs_list.append(downstream_model.name) -%}
+                    {%- do recursive_models.append(downstream_model.name) -%}
+                    {{ outer_loop(all_nodes) }}
+                {%- endif -%}
+            {%- endfor -%}
+            {%- set recursive_models = recursive_models[1:] -%}
         {%- endfor -%}
     {%- endif -%}
 {%- endfor -%}
