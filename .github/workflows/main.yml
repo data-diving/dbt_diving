@@ -10,7 +10,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: ./test_project
+        working-directory: test_project
     steps:
       - name: Greeting Message
         run: echo "Running GitHub action to build and test project…"
