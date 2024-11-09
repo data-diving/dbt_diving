@@ -159,5 +159,12 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+# local artifacts
+test_project/.venv
+test_project/dbt_packages
+test_project/logs
+test_project/target
+test_project/.user.yml
+
 # Other settings
 .DS_Store
