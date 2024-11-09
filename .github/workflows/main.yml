@@ -15,8 +15,8 @@ jobs:
       - name: Install uv
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
       - name: Install Python & dbt
-        working-directory: ${{ env.WORK_DIR }}/test_project
+        working-directory: test_project
         run: uv venv && source .venv/bin/activate && uv pip install -r requirements.txt && export DBT_PROFILES_DIR=. && dbt deps
       - name: Run & test dbt
-        working-directory: ${{ env.WORK_DIR }}/test_project
+        working-directory: test_project
         run: dbt run && dbt test && ./tests.sh
