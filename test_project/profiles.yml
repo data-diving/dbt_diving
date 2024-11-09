@@ -1,0 +1,6 @@
+default:
+  outputs:
+    dev:
+      type: duckdb
+      path: /tmp/dbt_diving.duckdb
+  target: dev

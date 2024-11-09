@@ -1,0 +1,19 @@
+name: dbt_diving_test
+profile: default
+require-dbt-version: 1.4.0
+config-version: 2
+version: 1.0.0
+
+models:
+  dbt_diving_test:
+    +materialized: table
+    model_a1:
+      tags: a
+    model_a2:
+      tags: a
+    model_b:
+      tags: b
+    model_c1:
+      tags: c
+    model_c2:
+      tags: c
