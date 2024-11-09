@@ -19,4 +19,4 @@ jobs:
         run: uv venv && source .venv/bin/activate && uv pip install -r requirements.txt && export DBT_PROFILES_DIR=. && dbt deps
       - name: Run & test dbt
         working-directory: test_project
-        run: dbt run && dbt test && ./tests.sh
+        run: source .venv/bin/activate && dbt run && dbt test && ./tests.sh
