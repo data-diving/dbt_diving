@@ -1,7 +1,8 @@
 name: Run Tests
 run-name: Build a test project and run tests
 on:
-  push:
+  pull_request:
+    branches: [main]
 
 jobs:
   Run-Tests:
@@ -9,6 +10,8 @@ jobs:
     steps:
       - name: Greeting Message
         run: echo "Running GitHub action to build and test project…"
+      - name: Checkout code
+        uses: actions/checkout@v4
       - name: Install uv
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
       - name: Install Python & dbt
