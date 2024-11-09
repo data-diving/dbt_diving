@@ -7,6 +7,10 @@ on:
 jobs:
   Run-Tests:
     runs-on: ubuntu-24.04
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./test_project
     steps:
       - name: Greeting Message
         run: echo "Running GitHub action to build and test project…"
