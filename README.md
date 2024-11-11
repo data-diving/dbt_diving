@@ -1,3 +1,4 @@
+![Run Tests badge](https://github.com/data-diving/dbt_diving/actions/workflows/main.yml/badge.svg)
 # dbt_diving
 A free to use dbt package with helper macros
 
