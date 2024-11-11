@@ -4,14 +4,7 @@ A free to use dbt package with helper macros
 
 ## Installation
 
-To install package, add these lines to your `packages.yml` file:
-```yaml
-packages:
-    - package: data-diving/dbt_diving
-      version: ">=1.1.0"
-```
-
-Check [dbt Hub](https://hub.getdbt.com/) for the latest installation instructions, 
+Check [dbt Hub](https://hub.getdbt.com/data-diving/dbt_diving/latest/) for the latest installation instructions, 
 or [read the docs](https://docs.getdbt.com/docs/building-a-dbt-project/package-management/) for more information on installing packages.
 
 ## Macros in the package
@@ -23,12 +16,12 @@ or [read the docs](https://docs.getdbt.com/docs/building-a-dbt-project/package-m
 
 ```bash
 # Call the macro from another macro code
-{% set model_refs = dbt_diving.get_refs_recursive("selector_string") %}
+{% set model_refs = dbt_diving.get_refs_recursive("select_string") %}
 
 # Call the macro from a model code
 # https://docs.getdbt.com/reference/dbt-jinja-functions/graph#accessing-models
 {% if execute %}
-  {% set model_refs = dbt_diving.get_refs_recursive("selector_string") %}
+  {% set model_refs = dbt_diving.get_refs_recursive("select_string") %}
 {% endif %}
 ```
 

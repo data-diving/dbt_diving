@@ -1,7 +1,7 @@
-{%- macro get_refs_recursive(selector, print_list=False) -%}
+{%- macro get_refs_recursive(select, print_list=False) -%}
 
 {%- set ns = namespace(node_list=[], cur_node_list=[]) -%}
-{%- for one_union in selector.split(' ') -%}
+{%- for one_union in select.split(' ') -%}
     {%- set intersect_list = one_union.split(',') -%}
     {%- for one_intersect in intersect_list -%}
         {%- if loop.index0 == 0 -%}
@@ -25,7 +25,7 @@
 {% set final_list = ns.node_list | unique | list | sort %}
 {% if print_list %}
     {%- for one_model in final_list -%}
-        {{ print(project_name ~ "." ~ one_model) }}
+        {{ print(one_model) }}
     {%- endfor -%}
 {% endif %}
 {{ return(final_list) }}
@@ -49,13 +49,27 @@
 
 {%- set nodes = [] -%}
 {%- if condition.startswith('tag:') -%}
-    {%- for node in all_nodes recursive -%}
+    {%- for node in all_nodes -%}
         {%- if condition.split('tag:')[1] in node['tags'] -%}
             {%- do nodes.append(node) -%}
         {%- endif -%}
     {%- endfor -%}
+{%- elif condition.startswith('path:') -%}
+    {%- for node in all_nodes -%}
+        {%- if node['original_file_path'].startswith(condition.split('path:')[1]) -%}
+            {%- do nodes.append(node) -%}
+        {%- endif -%}
+    {%- endfor -%}
 {%- else -%}
+    {# adding model #}
     {%- set nodes = all_nodes | selectattr('name', 'equalto', condition) | list -%}
+    {# and models from folder with the same name #}
+    {%- for node in all_nodes -%}
+        {%- set node_path_with_dots = node['path'].split('.')[0] | replace("/", ".") -%}
+        {%- if node_path_with_dots.startswith(condition) -%}
+            {%- do nodes.append(node) -%}
+        {%- endif -%}
+    {%- endfor -%}
 {%- endif -%}
 
 {%- for node in nodes -%}
