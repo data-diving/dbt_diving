@@ -7,13 +7,7 @@ version: 1.0.0
 models:
   dbt_diving_test:
     +materialized: table
-    model_a1:
-      tags: a
-    model_a2:
-      tags: a
-    model_b:
-      tags: b
-    model_c1:
-      tags: c
-    model_c2:
-      tags: c
+    a1_b:
+      tags: tag_a1_b
+    a2_c1_c2:
+      tags: tag_a2_c1_c2

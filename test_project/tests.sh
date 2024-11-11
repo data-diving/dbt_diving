@@ -2,6 +2,7 @@
 
 # define test selectors
 test_selectors=(
+    "model_does_not_exist"
     "model_a1"
     "model_a1+"
     "model_b"
@@ -9,7 +10,12 @@ test_selectors=(
     "model_b+"
     "+model_b+"
     "+model_c1"
-    "tag:b,+tag:c tag:a,+tag:c"
+    "tag:tag_a1_b"
+    "tag:tag_a2_c1_c2,+c2"
+    "model_a2 model_c1"
+    "a1_b"
+    "a1_b.model_a1"
+    "path:models/a1_b"
 )
 
 # Initialize variables for each flag
@@ -49,8 +55,8 @@ echo "##################################################"
 # compare results from macro to CLI ls command for each selector
 for item in "${test_selectors[@]}"; do
     echo -n "Testing selector '$item'… "
-    dbt -q ls -s "$item" > cli.log
-    dbt -q run-operation dbt_diving.get_refs_recursive --args "{\"selector\": \"$item\", \"print_list\": True}" > macro.log
+    dbt -q ls -s "$item" | cut -d '.' -f 3 > cli.log
+    dbt -q run-operation dbt_diving.get_refs_recursive --args "{\"select\": \"$item\", \"print_list\": True}" > macro.log
 
     if diff cli.log macro.log > /dev/null; then
         printf "\e[32mPASSED\e[0m\n"
