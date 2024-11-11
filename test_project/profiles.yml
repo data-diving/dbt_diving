@@ -2,5 +2,5 @@ default:
   outputs:
     dev:
       type: duckdb
-      path: /tmp/dbt_diving.duckdb
+      path: "{{ env_var('DB_FILE') }}"
   target: dev

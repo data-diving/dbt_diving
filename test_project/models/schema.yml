@@ -1,0 +1,6 @@
+version: 2
+
+sources:
+  - name: db_sources
+    tables:
+      - name: source_table

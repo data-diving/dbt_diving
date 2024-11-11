@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # define test selectors
-test_selectors=(
+test_selectors_model=(
     "model_does_not_exist"
     "model_a1"
     "model_a1+"
@@ -11,9 +11,10 @@ test_selectors=(
     "+model_b+"
     "+model_c1"
     "tag:tag_a1_b"
-    "tag:tag_a2_c1_c2,+c2"
+    "tag:tag_a2_c1_c2,+model_c2"
     "model_a2 model_c1"
     "a1_b"
+    "+a1_b"
     "a1_b.model_a1"
     "path:models/a1_b"
 )
@@ -50,28 +51,58 @@ fi
 diff_cnt=0
 
 echo "##################################################"
-echo "###   Running tests for get_refs_recursive()   ###"
+echo "###       Running tests for get_nodes()        ###"
 echo "##################################################"
 # compare results from macro to CLI ls command for each selector
-for item in "${test_selectors[@]}"; do
-    echo -n "Testing selector '$item'… "
+for item in "${test_selectors_model[@]}"; do
+    echo -n "Select string '$item'… "
     dbt -q ls -s "$item" | cut -d '.' -f 3 > cli.log
-    dbt -q run-operation dbt_diving.get_refs_recursive --args "{\"select\": \"$item\", \"print_list\": True}" > macro.log
+    dbt -q run-operation dbt_diving.get_nodes --args "{\"select\": \"$item\", \"resource_type\": \"all\", \"print_list\": True}" > macro.log
 
     if diff cli.log macro.log > /dev/null; then
         printf "\e[32mPASSED\e[0m\n"
         if [ "$verbose" -eq 1 ]; then
-            echo "'dbt ls' command returned:" | sed 's/^/  /'
+            echo "'dbt ls' returned:" | sed 's/^/  /'
             cat cli.log | sed 's/^/    /'
-            echo "'get_refs_recursive()' returned:" | sed 's/^/  /'
+            echo "macro returned:" | sed 's/^/  /'
             cat macro.log | sed 's/^/    /'
         fi
     else
         printf "\e[31mFAILED\e[0m\n"
         if [ "$quiet" -eq 0 ]; then
-            echo "'dbt ls' command returned:" | sed 's/^/  /'
+            echo "'dbt ls' returned:" | sed 's/^/  /'
             cat cli.log | sed 's/^/    /'
-            echo "'get_refs_recursive()' returned:" | sed 's/^/  /'
+            echo "macro returned:" | sed 's/^/  /'
+            cat macro.log | sed 's/^/    /'
+        fi
+        ((diff_cnt++))
+    fi
+done
+
+
+echo "##################################################"
+echo "###   Running tests for get_refs_recursive()   ###"
+echo "##################################################"
+# compare results from macro to CLI ls command for each selector
+for item in "${test_selectors_model[@]}"; do
+    echo -n "Select string '$item'… "
+    dbt -q ls -s "$item" --resource-type=model| cut -d '.' -f 3 > cli.log
+    dbt -q run-operation dbt_diving.get_refs_recursive --args "{\"select\": \"$item\", \"print_list\": True}" > macro.log
+
+    if diff cli.log macro.log > /dev/null; then
+        printf "\e[32mPASSED\e[0m\n"
+        if [ "$verbose" -eq 1 ]; then
+            echo "'dbt ls' returned:" | sed 's/^/  /'
+            cat cli.log | sed 's/^/    /'
+            echo "macro returned:" | sed 's/^/  /'
+            cat macro.log | sed 's/^/    /'
+        fi
+    else
+        printf "\e[31mFAILED\e[0m\n"
+        if [ "$quiet" -eq 0 ]; then
+            echo "'dbt ls' returned:" | sed 's/^/  /'
+            cat cli.log | sed 's/^/    /'
+            echo "macro returned:" | sed 's/^/  /'
             cat macro.log | sed 's/^/    /'
         fi
         ((diff_cnt++))
