@@ -1,2 +1,2 @@
 SELECT *
-FROM {{ source ('db_sources', 'source_table') }}
+FROM {{ source ('main', 'source_table') }}
