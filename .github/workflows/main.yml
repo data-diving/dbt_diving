@@ -18,6 +18,7 @@ jobs:
         working-directory: test_project
         run: uv venv && source .venv/bin/activate && echo PATH=$PATH >> $GITHUB_ENV
       - name: Install Python & dbt packages        
+        working-directory: test_project
         run: uv pip install -r requirements.txt && export DBT_PROFILES_DIR=. && dbt deps
       - name: Set database filename
         run: echo "DB_FILE=/tmp/dbt_diving.duckdb" >> $GITHUB_ENV
