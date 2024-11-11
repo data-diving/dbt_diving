@@ -1,2 +1,2 @@
 SELECT *
-FROM (VALUES ('Podgorica', 3)) cities(name, id)
+FROM {{ source ('main', 'source_table') }}
