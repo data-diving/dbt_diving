@@ -14,14 +14,16 @@ jobs:
         uses: actions/checkout@v4
       - name: Install uv
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
-      - name: Install Python & dbt
+      - name: Install Python & activate virtual environment
         working-directory: test_project
-        run: uv venv && source .venv/bin/activate && uv pip install -r requirements.txt && export DBT_PROFILES_DIR=. && dbt deps
+        run: uv venv && source .venv/bin/activate && echo PATH=$PATH >> $GITHUB_ENV
+      - name: Install Python & dbt packages        
+        run: uv pip install -r requirements.txt && export DBT_PROFILES_DIR=. && dbt deps
       - name: Set database filename
         run: echo "DB_FILE=/tmp/dbt_diving.duckdb" >> $GITHUB_ENV
       - name: Create source table
         working-directory: test_project
-        run: source .venv/bin/activate && duckdb $DB_FILE "CREATE TABLE source_table (id INTEGER, name VARCHAR);"
+        run: duckdb $DB_FILE "CREATE TABLE source_table (id INTEGER, name VARCHAR);"
       - name: Run & test dbt
         working-directory: test_project
-        run: source .venv/bin/activate && dbt run && dbt test && ./tests.sh
+        run: dbt run && dbt test && ./tests.sh
