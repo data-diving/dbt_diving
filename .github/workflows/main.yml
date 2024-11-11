@@ -20,11 +20,13 @@ jobs:
       - name: Install Python & dbt packages        
         working-directory: test_project
         run: uv pip install -r requirements.txt && export DBT_PROFILES_DIR=. && dbt deps
+      - name: Add Python site packages to PATH
+        run: echo "$(python -m site --user-base)/bin" >> $GITHUB_PATH
       - name: Set database filename
         run: echo "DB_FILE=/tmp/dbt_diving.duckdb" >> $GITHUB_ENV
       - name: Create source table
         working-directory: test_project
-        run: duckdb $DB_FILE "CREATE TABLE source_table (id INTEGER, name VARCHAR);"
+        run: python3 -c "import duckdb, os; duckdb.connect(database=os.environ['DB_FILE']).execute('CREATE TABLE source_table (id INTEGER, name VARCHAR);')"
       - name: Run & test dbt
         working-directory: test_project
         run: dbt run && dbt test && ./tests.sh
