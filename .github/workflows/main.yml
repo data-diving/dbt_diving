@@ -24,9 +24,6 @@ jobs:
         run: echo "$(python -m site --user-base)/bin" >> $GITHUB_PATH
       - name: Set database filename
         run: echo "DB_FILE=/tmp/dbt_diving.duckdb" >> $GITHUB_ENV
-      - name: Create source table
+      - name: Create source table & run tests
         working-directory: test_project
-        run: python3 -c "import duckdb, os; duckdb.connect(database=os.environ['DB_FILE']).execute('CREATE TABLE source_table (id INTEGER, name VARCHAR);')"
-      - name: Run & test dbt
-        working-directory: test_project
-        run: dbt run && dbt test && ./tests.sh
+        run: python3 -c "import duckdb, os; duckdb.connect(database=os.environ['DB_FILE']).execute('CREATE TABLE source_table (id INTEGER, name VARCHAR);')" && dbt run && dbt test && ./tests.sh
