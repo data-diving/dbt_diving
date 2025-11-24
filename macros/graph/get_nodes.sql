@@ -79,6 +79,8 @@
 {%- for node in nodes -%}
     {%- do refs_list.append(node.name) -%}
     
+    {# dbt versions <1.5.0 #}
+    {%- if dbt_version < "1.5.0" -%}
     {%- if with_upstream -%}
         {%- set cur_upstream_node = node.name -%}
         {%- if resource_type in ["model", "all"] -%}
@@ -123,6 +125,50 @@
                 {%- set recursive_models = recursive_models[1:] -%}
             {%- endfor -%}
         {%- endif -%}
+    {%- endif -%}
+
+    {# dbt versions >=1.5.0 #}
+    {# https://docs.getdbt.com/docs/dbt-versions/core-upgrade/Older%20versions/upgrading-to-v1.5#for-consumers-of-dbt-artifacts-metadata #}
+    {%- else -%}
+    {%- if with_upstream -%}
+        {%- set cur_upstream_node = node.name -%}
+        {%- if resource_type in ["model", "all"] -%}
+            {%- for upstream_model in all_nodes | selectattr('name', 'equalto', cur_upstream_node) -%}
+                {%- for ref in upstream_model['refs'] recursive -%}
+                    {%- do refs_list.append(ref.name) -%}
+                    {%- set recursive_refs = all_nodes | selectattr('name', 'equalto', ref.name) -%}
+                    {%- set outer_loop = loop -%}
+                    {%- for recursive_ref in recursive_refs -%}
+                        {%- set cur_upstream_node = recursive_ref -%}
+                        {{ outer_loop(recursive_ref['refs']) }}
+                    {%- endfor -%}
+                {%- endfor -%}
+            {%- endfor -%}
+        {%- endif -%}
+        {%- if resource_type in ["source", "all"] -%}
+            {%- for ref in all_nodes | selectattr('name', 'in', refs_list) -%}
+                {%- for source in ref['sources'] -%}
+                    {%- do refs_list.append(source[-1]) -%}
+                {%- endfor -%}
+            {%- endfor -%}
+        {%- endif -%}
+    {%- endif -%}
+
+    {%- if with_downstream -%}
+        {%- set recursive_models = [node.name] -%}
+        {%- for recursive_model in recursive_models recursive -%}
+            {%- for downstream_model in all_nodes -%}
+                {%- for ref in downstream_model['refs'] -%}
+                    {%- if recursive_model == ref.name -%}
+                        {% if downstream_model.name not in refs_list %}
+                        {%- do refs_list.append(downstream_model.name) -%}
+                        {%- do recursive_models.append(downstream_model.name) -%}
+                        {% endif %}
+                    {%- endif -%}
+                {%- endfor -%}
+            {%- endfor -%}
+        {%- endfor -%}
+    {%- endif -%}
     {%- endif -%}
 {%- endfor -%}
 

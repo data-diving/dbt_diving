@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 jobs:
-  Run-Tests:
+  dbt-1.4.0-py-3.8:
     runs-on: ubuntu-24.04
     steps:
       - name: Greeting Message
@@ -16,10 +16,38 @@ jobs:
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
       - name: Install Python & activate virtual environment
         working-directory: test_project
-        run: uv venv && source .venv/bin/activate && echo PATH=$PATH >> $GITHUB_ENV
+        run: uv venv --python 3.8 && source .venv/bin/activate && echo PATH=$PATH >> $GITHUB_ENV
+      - name: Creating dbt_project.yml
+        working-directory: test_project
+        run: rm dbt_project_1.9.10.yml && mv dbt_project_1.4.0.yml dbt_project.yml
       - name: Install Python & dbt packages        
         working-directory: test_project
-        run: uv pip install -r requirements.txt && export DBT_PROFILES_DIR=. && dbt deps
+        run: uv pip install -r requirements_1.4.0.txt && export DBT_PROFILES_DIR=. && dbt deps
+      - name: Add Python site packages to PATH
+        run: echo "$(python -m site --user-base)/bin" >> $GITHUB_PATH
+      - name: Set database filename
+        run: echo "DB_FILE=/tmp/dbt_diving.duckdb" >> $GITHUB_ENV
+      - name: Create source table & run tests
+        working-directory: test_project
+        run: python3 -c "import duckdb, os; duckdb.connect(database=os.environ['DB_FILE']).execute('CREATE TABLE source_table (id INTEGER, name VARCHAR);')" && dbt run && dbt test && ./tests.sh
+  dbt-1.9.10-py-3.12:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Greeting Message
+        run: echo "Running GitHub action to build and test project…"
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+      - name: Install Python & activate virtual environment
+        working-directory: test_project
+        run: uv venv --python 3.12 && source .venv/bin/activate && echo PATH=$PATH >> $GITHUB_ENV
+      - name: Creating dbt_project.yml
+        working-directory: test_project
+        run: rm dbt_project_1.4.0.yml && mv dbt_project_1.9.10.yml dbt_project.yml
+      - name: Install Python & dbt packages        
+        working-directory: test_project
+        run: uv pip install -r requirements_1.9.10.txt && export DBT_PROFILES_DIR=. && dbt deps
       - name: Add Python site packages to PATH
         run: echo "$(python -m site --user-base)/bin" >> $GITHUB_PATH
       - name: Set database filename
