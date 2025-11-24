@@ -3,7 +3,7 @@ name = "dbt_diving"
 version = "1.0.0"
 description = "Project for testing dbt_diving package"
 readme = "README.md"
-requires-python = ">=3.8.0,<3.9.0"
+requires-python = ">=3.8.0"
 dynamic = ["dependencies"]
 
 [tool.setuptools.dynamic]
