@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 jobs:
-  dbt-1.4.0-py-3.8:
+  dbt-1_4_0-py-3_8:
     runs-on: ubuntu-24.04
     steps:
       - name: Greeting Message
@@ -30,7 +30,7 @@ jobs:
       - name: Create source table & run tests
         working-directory: test_project
         run: python3 -c "import duckdb, os; duckdb.connect(database=os.environ['DB_FILE']).execute('CREATE TABLE source_table (id INTEGER, name VARCHAR);')" && dbt run && dbt test && ./tests.sh
-  dbt-1.9.10-py-3.12:
+  dbt-1_9_10-py-3_12:
     runs-on: ubuntu-24.04
     steps:
       - name: Greeting Message
